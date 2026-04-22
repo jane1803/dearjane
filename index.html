@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Jane과의 대화</title>
+</head>
+<body>
+    <div id="chat-container"></div>
+    <input type="text" id="user-input">
+    <button onclick="callJane()">보내기</button>
+
+    <script>
+        const SYSTEM = "당신은 친절한 AI 어시스턴트 Jane입니다.";
+        let msgs = [];
+
+        async function callJane() {
+            const input = document.getElementById('user-input');
+            const userText = input.value;
+            msgs.push({ role: "user", content: userText });
+
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ system: SYSTEM, messages: msgs })
+            });
+
+            const data = await res.json();
+            msgs.push({ role: "assistant", content: data.content });
+            
+            document.getElementById('chat-container').innerText = data.content;
+            input.value = '';
+        }
+    </script>
+</body>
+</html>
