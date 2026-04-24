@@ -1,35 +1,203 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Jane과의 대화</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Dear Jane</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#eef2e6;
+    --surface:#faf8f0;
+    --border:#ddd9c8;
+    --green:#7fa647;
+    --green-dark:#5c7a32;
+    --green-light:#c8d9a8;
+    --cream:#f0ead8;
+    --cream-dark:#e2d9c0;
+    --text-dark:#2d2a1e;
+    --text-mid:#5a5640;
+    --text-sub:#8a8670;
+  }
+  body{background:var(--bg);font-family:'Noto Sans KR',sans-serif;color:var(--text-dark);}
+  #root{margin:0 auto;max-width:420px;min-height:100vh;border-left:1px solid var(--border);border-right:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column;}
+  .landing{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 28px;text-align:center;}
+  .landing .label{font-size:11px;letter-spacing:.32em;color:var(--green);margin-bottom:28px;font-weight:500;}
+  .landing h1{font-family:'Noto Serif KR',serif;font-size:27px;font-weight:700;line-height:1.6;margin-bottom:16px;}
+  .landing p{font-size:14px;line-height:2.1;color:var(--text-mid);margin-bottom:36px;}
+  .heart-illust{width:120px;height:120px;margin:0 auto 32px;}
+  .btn-primary{width:100%;border:none;border-radius:14px;background:var(--green);color:#fff;padding:16px;font-size:15px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;transition:background .15s;}
+  .btn-primary:hover{background:var(--green-dark);}
+  .btn-primary:disabled{opacity:.35;cursor:not-allowed;}
+  .progress-wrap{padding:20px 20px 0;}
+  .progress-bar{height:4px;border-radius:99px;background:var(--cream-dark);overflow:hidden;}
+  .progress-fill{height:100%;background:var(--green);transition:width .35s ease;}
+  .question-screen{flex:1;padding:24px 20px 20px;}
+  .q-num{font-size:11px;color:var(--green);margin-bottom:14px;font-weight:500;}
+  .q-text{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;line-height:1.65;margin-bottom:30px;white-space:pre-line;}
+  .opts{display:grid;gap:10px;}
+  .opt-btn{width:100%;border-radius:50px;border:1.5px solid var(--cream-dark);background:var(--cream);padding:13px 20px;text-align:left;font-size:14px;font-family:'Noto Sans KR',sans-serif;line-height:1.6;cursor:pointer;transition:all .2s;color:var(--text-dark);}
+  .opt-btn:hover{border-color:var(--green-light);background:#e8f0d8;}
+  .opt-btn.selected{border-color:var(--green);background:var(--green);color:#fff;transform:scale(1.01);}
+  .result-screen{flex:1;display:flex;flex-direction:column;justify-content:center;padding:24px 20px;}
+  .result-card{border-radius:20px;border:1px solid var(--cream-dark);background:var(--cream);padding:28px 24px;}
+  .result-label{font-size:10px;letter-spacing:.2em;color:var(--green);margin-bottom:12px;font-weight:500;}
+  .result-pct{font-size:64px;font-weight:800;line-height:1;margin-bottom:14px;font-family:'Noto Serif KR',serif;}
+  .result-comment{font-size:18px;font-weight:700;line-height:1.6;margin-bottom:8px;font-family:'Noto Serif KR',serif;}
+  .result-sub{font-size:13px;line-height:2;color:var(--text-mid);white-space:pre-line;margin-bottom:22px;}
+  .result-divider{border:none;border-top:1px solid var(--cream-dark);margin-bottom:18px;}
+  .result-cta{font-size:14px;line-height:1.9;}
+  .result-btns{margin-top:20px;display:grid;gap:10px;}
+  .btn-secondary{width:100%;border-radius:14px;border:1.5px solid var(--cream-dark);background:transparent;color:var(--text-mid);padding:14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
+  .btn-secondary:hover{background:var(--cream);}
+  .chat-header{display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border);padding:16px 20px;background:var(--surface);}
+  .chat-avatar{width:40px;height:40px;border-radius:50%;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--green-dark);font-size:15px;flex-shrink:0;border:1.5px solid var(--green);}
+  .chat-name{font-weight:700;font-size:15px;}
+  .chat-sub{font-size:11px;color:var(--text-sub);}
+  .chat-messages{flex:1;display:flex;flex-direction:column;gap:12px;padding:16px;overflow-y:auto;background:var(--bg);}
+  .msg{max-width:82%;padding:13px 16px;font-size:14px;line-height:1.9;white-space:pre-line;border-radius:18px;}
+  .msg.jane{align-self:flex-start;background:var(--cream);border:1px solid var(--cream-dark);border-top-left-radius:4px;}
+  .msg.user{align-self:flex-end;background:var(--green);color:#fff;border-top-right-radius:4px;}
+  .msg.typing{align-self:flex-start;background:var(--cream);border:1px solid var(--cream-dark);border-top-left-radius:4px;display:flex;gap:5px;align-items:center;padding:16px 18px;}
+  .dot{width:7px;height:7px;border-radius:50%;background:var(--green-light);animation:blink 1.2s infinite;}
+  .dot:nth-child(2){animation-delay:.2s;}
+  .dot:nth-child(3){animation-delay:.4s;}
+  @keyframes blink{0%,80%,100%{opacity:.3}40%{opacity:1}}
+  .chat-input-wrap{display:flex;gap:8px;border-top:1px solid var(--border);background:var(--surface);padding:14px;}
+  .chat-input{flex:1;resize:none;border-radius:14px;border:1.5px solid var(--cream-dark);background:var(--cream);padding:11px 14px;font-size:14px;font-family:'Noto Sans KR',sans-serif;outline:none;min-height:44px;max-height:110px;line-height:1.6;color:var(--text-dark);}
+  .chat-input:focus{border-color:var(--green-light);}
+  .chat-input::placeholder{color:#b5b09a;}
+  .send-btn{border-radius:12px;background:var(--green);border:none;color:#fff;padding:0 18px;font-size:13px;font-family:'Noto Sans KR',sans-serif;font-weight:500;cursor:pointer;}
+  .send-btn:hover{background:var(--green-dark);}
+  .send-btn:disabled{opacity:.35;cursor:not-allowed;}
+  @keyframes fadeSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  .q-text,.opts{animation:fadeSlide .25s ease;}
+</style>
 </head>
 <body>
-    <div id="chat-container"></div>
-    <input type="text" id="user-input">
-    <button onclick="callJane()">보내기</button>
-
-    <script>
-        const SYSTEM = "당신은 친절한 AI 어시스턴트 Jane입니다.";
-        let msgs = [];
-
-        async function callJane() {
-            const input = document.getElementById('user-input');
-            const userText = input.value;
-            msgs.push({ role: "user", content: userText });
-
-            const res = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ system: SYSTEM, messages: msgs })
-            });
-
-            const data = await res.json();
-            msgs.push({ role: "assistant", content: data.content });
-            
-            document.getElementById('chat-container').innerText = data.content;
-            input.value = '';
-        }
-    </script>
+<div id="root"></div>
+<script>
+const questions = [
+  { q: "왜 헤어졌어?", opts: ["내가 부족했던 것 같아", "상대가 마음이 떠난 것 같아", "서로 안 맞았던 것 같아", "정확히는 잘 모르겠어"] },
+  { q: "헤어지기 전,\n사이는 어땠어?", opts: ["전체적으로 좋았던 편이야", "좋을 때도 있고 아닐 때도 있었어", "점점 멀어지고 있었어", "이미 많이 어긋나 있었어"] },
+  { q: "요즘 제일 많이\n드는 생각은 뭐야?", opts: ["다시 만나고 싶다", "왜 이렇게 끝났는지 모르겠다", "내가 더 잘할 수 있었을 텐데", "그냥 공허하다"] },
+  { q: "요즘 너 상태는 어때?", opts: ["계속 생각나서 힘들어", "괜찮은 척하고 있어", "많이 무너져 있는 상태야", "조금씩 괜찮아지고 있어"] },
+  { q: "그 사람 SNS나\n카톡을 보게 돼?", opts: ["자주 확인하게 된다", "가끔 보게 된다", "참으려고 노력 중이다", "아예 보지 않는다"] },
+  { q: "재회하면\n뭐가 달라질 것 같아?", opts: ["다시 잘 해볼 수 있을 것 같다", "지금보다 덜 힘들 것 같다", "그냥 한 번 더 보고 싶다", "솔직히 잘 모르겠다"] },
+  { q: "지금 너한테\n해주고 싶은 말이 있다면?", opts: ["내 잘못만은 아니다", "조금만 더 버텨보자", "이제 놓아도 괜찮다", "무슨 말을 해야 할지 모르겠다"] },
+];
+const scoreMap = [
+  { "내가 부족했던 것 같아": -3, "상대가 마음이 떠난 것 같아": +5, "서로 안 맞았던 것 같아": +2, "정확히는 잘 모르겠어": +8 },
+  { "전체적으로 좋았던 편이야": +8, "좋을 때도 있고 아닐 때도 있었어": +3, "점점 멀어지고 있었어": -2, "이미 많이 어긋나 있었어": -6 },
+  { "다시 만나고 싶다": +8, "왜 이렇게 끝났는지 모르겠다": +5, "내가 더 잘할 수 있었을 텐데": +3, "그냥 공허하다": -4 },
+  { "계속 생각나서 힘들어": +5, "괜찮은 척하고 있어": +2, "많이 무너져 있는 상태야": +3, "조금씩 괜찮아지고 있어": -8 },
+  { "자주 확인하게 된다": +8, "가끔 보게 된다": +4, "참으려고 노력 중이다": +1, "아예 보지 않는다": -5 },
+  { "다시 잘 해볼 수 있을 것 같다": +8, "지금보다 덜 힘들 것 같다": +4, "그냥 한 번 더 보고 싶다": +6, "솔직히 잘 모르겠다": +1 },
+  { "내 잘못만은 아니다": +2, "조금만 더 버텨보자": +4, "이제 놓아도 괜찮다": -8, "무슨 말을 해야 할지 모르겠다": +1 },
+];
+function calcPercent(answers) {
+  let base = 48;
+  answers.forEach((ans, i) => { base += (scoreMap[i][ans] || 0); });
+  return Math.min(91, Math.max(28, base));
+}
+function getBand(pct) {
+  if (pct <= 45) return { comment: "지금은 때가 아닐 수 있어", sub: "근데 그게 영원히는 아니야.\n지금 네 마음이 먼저야." };
+  if (pct <= 60) return { comment: "가능성보다 네 마음이 먼저야", sub: "숫자에 기대기 전에,\n지금 내가 어떤 상태인지 봐야 해." };
+  if (pct <= 75) return { comment: "이 숫자보다 중요한 게 있어", sub: "높은 점수보다,\n네 마음이 준비됐는지가 먼저야." };
+  return { comment: "준비가 됐는지가 먼저야", sub: "높은 가능성보다,\n지금 내가 감당할 수 있는지가 더 중요해." };
+}
+let screen='landing', qIndex=0, selected='', answers=[], messages=[], isTyping=false, sendDisabled=false, transitioning=false;
+const heartSVG = `<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+  <path d="M60,98 C58,96 20,72 14,52 C10,38 18,24 32,22 C42,20 52,28 60,36 C68,28 78,20 88,22 C102,24 110,38 106,52 C100,72 62,96 60,98 Z" fill="#7fa647" opacity="0.25"/>
+  <path d="M60,90 C58,88 26,67 20,48 C16,35 24,23 37,22 C47,21 56,29 60,36 C64,29 73,21 83,22 C96,23 104,35 100,48 C94,67 62,88 60,90 Z" fill="#7fa647"/>
+  <path d="M48,52 Q50,48 52,52" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M68,52 Q70,48 72,52" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+  <path d="M52,62 Q60,68 68,62" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round"/>
+</svg>`;
+function buildJaneSystemPrompt(answers) {
+  const qAnswers = questions.map((q, i) => `- ${q.q.replace('\n','')}: ${answers[i]}`).join('\n');
+  return `너는 'Jane'이야. 이별 회복을 도와주는 따뜻하지만 솔직한 언니 같은 존재야.\n\n사용자가 방금 퀴즈를 통해 이렇게 답했어:\n${qAnswers}\n\n대화 규칙:\n- 반말로, 짧고 따뜻하게 말해. 한 번에 2-3문장 이내.\n- 설교하거나 분석하지 마. 옆에서 같이 걷는 느낌.\n- 질문은 한 번에 하나만.\n- 재회 가능성이나 숫자 얘기는 하지 마.\n- 힘들다고 하면 먼저 감정 인정해줘.\n- 솔직하게, 긍정적인 말만 하지 마.\n- 이모지 쓰지 마.\n- 한국어로만 대답해.`;
+}
+async function callJaneAPI(userMessage) {
+  const systemPrompt = buildJaneSystemPrompt(answers);
+  const history = messages.filter(m => !m.typing).map(m => ({ role: m.role==='jane'?'assistant':'user', content: m.text }));
+  history.push({ role: 'user', content: userMessage });
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ system: systemPrompt, messages: history }),
+  });
+  const data = await res.json();
+  return data.content?.[0]?.text || '...';
+}
+function render() {
+  const root = document.getElementById('root');
+  root.innerHTML = '';
+  if (screen==='landing') renderLanding(root);
+  else if (screen==='question') renderQuestion(root);
+  else if (screen==='result') renderResult(root);
+  else if (screen==='chat') renderChat(root);
+}
+function renderLanding(root) {
+  root.innerHTML = `<div class="landing"><div class="label">DEAR JANE</div><div class="heart-illust">${heartSVG}</div><h1>나 이 사람이랑<br/>재회할 수 있을까?</h1><p>재회를 결정하기 전에<br/>확인해야 할 것들</p><button class="btn-primary" id="startBtn">시작하기</button></div>`;
+  document.getElementById('startBtn').onclick = () => { qIndex=0; selected=''; answers=[]; screen='question'; render(); };
+}
+function renderQuestion(root) {
+  const q = questions[qIndex];
+  const progress = ((qIndex+1)/questions.length)*100;
+  const optsHTML = q.opts.map(opt => `<button class="opt-btn${selected===opt?' selected':''}" data-opt="${opt}">${opt}</button>`).join('');
+  root.innerHTML = `<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div></div><div class="question-screen"><div class="q-num">${qIndex+1} / ${questions.length}</div><div class="q-text">${q.q}</div><div class="opts">${optsHTML}</div></div>`;
+  root.querySelectorAll('.opt-btn').forEach(btn => {
+    btn.onclick = () => {
+      if (transitioning) return;
+      selected = btn.dataset.opt;
+      root.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      answers[qIndex] = selected;
+      transitioning = true;
+      setTimeout(() => {
+        transitioning = false;
+        if (qIndex < questions.length-1) { qIndex++; selected = answers[qIndex]||''; render(); }
+        else { screen='result'; render(); }
+      }, 400);
+    };
+  });
+}
+function renderResult(root) {
+  const pct = calcPercent(answers);
+  const band = getBand(pct);
+  root.innerHTML = `<div class="result-screen"><div class="result-card"><div class="result-label">REUNION POSSIBILITY</div><div class="result-pct">${pct}%</div><div class="result-comment">${band.comment}</div><div class="result-sub">${band.sub}</div><hr class="result-divider"/><div class="result-cta">재회 가능성보다 더 중요한게 하나 있어.<br/>너가 왜 그 사람을 못놓고 있는지.</div></div><div class="result-btns"><button class="btn-primary" id="chatBtn">Jane이랑 더 얘기해보기</button><button class="btn-secondary" id="restartBtn">처음부터 다시 보기</button></div></div>`;
+  document.getElementById('chatBtn').onclick = async () => { messages=[]; screen='chat'; render(); await addJaneMessage(null); };
+  document.getElementById('restartBtn').onclick = () => { screen='landing'; qIndex=0; selected=''; answers=[]; messages=[]; render(); };
+}
+async function addJaneMessage(userText) {
+  isTyping=true; render(); scrollChat();
+  try {
+    const reply = await callJaneAPI(userText || '퀴즈 다 했어. 결과 봤는데 좀 복잡한 기분이야.');
+    isTyping=false; messages.push({ role:'jane', text:reply }); render(); scrollChat();
+  } catch(e) {
+    isTyping=false; messages.push({ role:'jane', text:'잠깐, 다시 얘기해줄 수 있어?' }); render(); scrollChat();
+  }
+}
+function scrollChat() {
+  setTimeout(() => { const el=document.getElementById('chatMsgs'); if(el) el.scrollTop=el.scrollHeight; }, 50);
+}
+function renderChat(root) {
+  const msgsHTML = messages.map(m => `<div class="msg ${m.role}">${m.text}</div>`).join('');
+  const typingHTML = isTyping ? `<div class="msg typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>` : '';
+  root.innerHTML = `<div class="chat-header"><div class="chat-avatar">J</div><div><div class="chat-name">Jane</div><div class="chat-sub">디어제인</div></div></div><div class="chat-messages" id="chatMsgs">${msgsHTML}${typingHTML}</div><div class="chat-input-wrap"><textarea class="chat-input" id="chatInput" placeholder="지금 하고 싶은 말을 써줘" rows="1"></textarea><button class="send-btn" id="sendBtn" ${sendDisabled?'disabled':''}>보내기</button></div>`;
+  const input = document.getElementById('chatInput');
+  input.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();if(!sendDisabled)doSend(input.value);} });
+  document.getElementById('sendBtn').onclick = () => { if(!sendDisabled) doSend(input.value); };
+  scrollChat();
+}
+async function doSend(text) {
+  text=text.trim(); if(!text||sendDisabled) return;
+  sendDisabled=true; messages.push({role:'user',text});
+  await addJaneMessage(text); sendDisabled=false; render();
+}
+render();
+</script>
 </body>
 </html>
